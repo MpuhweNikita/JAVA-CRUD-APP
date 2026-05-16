@@ -1,8 +1,13 @@
 package com.JPA_Springboot.service;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.JPA_Springboot.model.Employee;
 import com.JPA_Springboot.repository.EmployeeRepository;
@@ -13,8 +18,8 @@ public class EmpServiceImplementation implements EmpService {
     EmployeeRepository employeeRepository;
 
     @Override
-    public ArrayList<Employee> findAllEmployees() {
-        return (ArrayList<Employee>) employeeRepository.findAll();
+    public List<Employee> findAllEmployees() {
+        return employeeRepository.findAll();
     }
 
     @Override
@@ -28,7 +33,7 @@ public class EmpServiceImplementation implements EmpService {
 
     @Override
     public void addEmployee() {
-        ArrayList<Employee> emp = new ArrayList<Employee>();
+        List<Employee> emp = new ArrayList<>();
         emp.add(new Employee("Olo", "Muhanga"));
         emp.add(new Employee("Daisy", "Nyagatare"));
         emp.add(new Employee("Tona", "New York"));
@@ -58,5 +63,26 @@ public class EmpServiceImplementation implements EmpService {
     @Override
     public void deleteAllData() {
         employeeRepository.truncateTable();
+    }
+
+    @Override
+    public void deleteEmployeeById(long id) {
+        employeeRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Employee> findEmployeesByName(String name) {
+        return employeeRepository.findByNameJPQL(name);
+    }
+
+    @Override
+    public List<Employee> findEmployeesByCity(String city) {
+        return employeeRepository.findByCityNative(city);
+    }
+
+    @Override
+    public Page<Employee> findAllEmployeesPaginated(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return employeeRepository.findAll(pageable);
     }
 }
